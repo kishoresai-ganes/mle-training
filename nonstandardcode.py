@@ -1,13 +1,13 @@
-import numpy as np
-import pandas as pd
 import os
 import tarfile
-from six.moves import urllib
 
+import numpy as np
+import pandas as pd
+from six.moves import urllib
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
-HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
+HOUSING_URL = DOWNLOAD_ROOT + "dataspets/housing/housing.tgz"
 
 
 def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
@@ -133,9 +133,9 @@ tree_rmse = np.sqrt(tree_mse)
 tree_rmse
 
 
+from scipy.stats import randint
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
-from scipy.stats import randint
 
 param_distribs = {
     "n_estimators": randint(low=1, high=200),
