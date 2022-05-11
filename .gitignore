@@ -1,2 +1,13 @@
 *.csv
 *.pyc
+*.tgz
+build/**
+*.egg-info/**
+dist/**
+mlruns/**
+.flake8
+.vscode/**
+*model/
+*.log
+artifacts/{0..9}/**
+docs/build/**
