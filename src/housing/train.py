@@ -1,5 +1,3 @@
-import mlflow
-import mlflow.sklearn
 import argparse
 import os
 import shutil
@@ -10,11 +8,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from logging import Logger
 from housing.logger import configure_logger
+import pickle
 
-remote_server_uri = "http://0.0.0.0:5000"  # set to your server URI
-mlflow.set_tracking_uri(remote_server_uri)
-exp_name = "Housing_mle-training"
-mlflow.set_experiment(exp_name)
+
 model_names = ["lin_model", "tree_model", "forest_model", "grid_search_model"]
 
 def get_path():
@@ -79,17 +75,17 @@ def load_data(in_path):
 
 
 def rem_artifacts(out_path):
-    for i in model_names:
-        if os.path.exists(out_path + "/" + i):
-            shutil.rmtree(out_path + "/" + i)
+    if os.path.exists(out_path + "/models" ):
+        shutil.rmtree(out_path + "/models")
 
 
-def mlflow_model(lin_reg, tree_reg, forest_reg, grid_search, out_path):
-    with mlflow.start_run(run_name="TRAIN"):
-        mlflow.sklearn.save_model(lin_reg, out_path + "/lin_model")
-        mlflow.sklearn.save_model(tree_reg, out_path + "/tree_model")
-        mlflow.sklearn.save_model(forest_reg, out_path + "/forest_model")
-        mlflow.sklearn.save_model(grid_search, out_path + "/grid_search_model")
+def model(lin_reg, tree_reg, forest_reg, grid_search, out_path):
+    out_path=out_path+'/models'
+    os.makedirs(out_path)
+    pickle.dump(lin_reg, open(out_path+'/lin_model.pkl', 'wb'))
+    pickle.dump(tree_reg, open(out_path+'/tree_model.pkl', 'wb'))
+    pickle.dump(forest_reg, open(out_path+'/forest_model.pkl', 'wb'))
+    pickle.dump(grid_search, open(out_path+'/grid_search_model.pkl', 'wb'))
 
 
 if __name__ == "__main__":
@@ -109,6 +105,6 @@ if __name__ == "__main__":
     lin_reg, tree_reg, forest_reg, grid_search = train(prepared, labels)
     logger.debug("Training completed")
     if not os.path.exists(out_path):
-        os.makedirs(out_path) 
-    mlflow_model(lin_reg, tree_reg, forest_reg, grid_search, out_path)
+        os.makedirs(out_path)
+    model(lin_reg, tree_reg, forest_reg, grid_search, out_path)
     logger.debug(f"Models stored at {out_path}.")

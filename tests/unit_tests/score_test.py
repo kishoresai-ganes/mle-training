@@ -9,7 +9,7 @@ import os
 args = score.parse_args()
 rootpath = score.get_path()
 
-class TestTrain(unittest.TestCase):
+class Testutils(unittest.TestCase):
     def test_parse_args(self):
 
         self.assertTrue( args.datapath == "data/processed")

@@ -9,7 +9,7 @@ import os
 args = train.parse_args()
 rootpath = train.get_path()
 
-class TestTrain(unittest.TestCase):
+class Testutils(unittest.TestCase):
     def test_parse_args(self):
 
         self.assertTrue( args.inputpath == "data/processed/")
@@ -26,7 +26,7 @@ class TestTrain(unittest.TestCase):
     def test_save_model(self):
         models=train.model_names
         for i in models:
-            self.assertTrue(os.path.isdir(f"{rootpath}{args.outputpath}/{i}"))
+            self.assertTrue(os.path.isfile(f"{rootpath}{args.outputpath}/models/{i}.pkl"))
 
 
 
