@@ -9,5 +9,6 @@ mlruns/**
 .vscode/**
 *model/
 *.log
-artifacts/{0..9}/**
+artifacts/models/**
 docs/build/**
+src/housing.egg-info/

@@ -1,9 +1,6 @@
 import argparse
 import os
 import pickle
-
-import mlflow
-import mlflow.sklearn
 import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
@@ -11,10 +8,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from logging import Logger
 from housing.logger import configure_logger
 
-remote_server_uri = "http://0.0.0.0:5000"  # set to your server URI
-mlflow.set_tracking_uri(remote_server_uri)
-exp_name = "Housing_mle-training"
-mlflow.set_experiment(exp_name)
 model_names = ['lin_model',
                 'tree_model',
                'forest_model',
@@ -40,9 +33,6 @@ def parse_args():
     parser.add_argument("--log-path", type=str, default=get_path()+"logs/logs.log")
     return parser.parse_args()
 
-
-exp_name = "Housing_mle-training"
-mlflow.set_experiment(exp_name)
 
 
 def scoring(X_test,y_test, lin_reg, tree_reg, forest_reg, grid_search):
@@ -83,27 +73,16 @@ def load_data(in_path):
 def load_models(model_path):
     models = []
     for i in model_names:
-        with open(model_path+'/'+i+'/model.pkl', 'rb') as f:
+        with open(model_path+'/models/'+i+'.pkl', 'rb') as f:
             models.append(pickle.load(f))
     return models
 
 
-def mlflow_score(models,X_test,y_test):
-    with mlflow.start_run(run_name='SCORE'):
-        lin_scores, tree_scores, forest_scores, grid_search_scores = scoring(
-            X_test,y_test, models[0], models[1], models[2], models[3])
-        mlflow.log_metrics({'lin_mae': lin_scores[0],
-                            'tree_mae': tree_scores[0],
-                            'forest_mae': forest_scores[0],
-                            'grid_search_mae': grid_search_scores[0]})
-        mlflow.log_metrics({'lin_mse': lin_scores[1],
-                            'tree_mse': tree_scores[1],
-                            'forest_mse': forest_scores[1],
-                            'grid_search_mse': grid_search_scores[1]})
-        mlflow.log_metrics({'lin_rmse': lin_scores[2],
-                            'tree_rmse': tree_scores[2],
-                            'forest_rmse': forest_scores[2],
-                            'grid_search_rmse': grid_search_scores[2]})
+def score(models,X_test,y_test):
+    
+    lin_scores, tree_scores, forest_scores, grid_search_scores = scoring(
+        X_test,y_test, models[0], models[1], models[2], models[3])
+    
     return [lin_scores, tree_scores, forest_scores, grid_search_scores]
 
 
@@ -123,6 +102,6 @@ if __name__ == "__main__":
     models = load_models(model_path)
     logger.debug("Loaded Models")
     scores=[]
-    scores=mlflow_score(models,X_test,y_test)
+    scores=score(models,X_test,y_test)
     for i in range(len(models)):
         logger.debug(f"{model_names[i]}={scores[i]}")
